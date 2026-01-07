@@ -3136,14 +3136,15 @@ run(function()
 			Name = "Target Visualiser", 
 			Default = true
 		})
-		OtherProjectiles = ProjectileAimbot:CreateToggle({
-			Name = 'Other Projectiles',
-			Default = true,
-			Function = function(call)
-				if Blacklist then
-					Blacklist.Object.Visible = call
-	})
-end)
+OtherProjectiles = ProjectileAimbot:CreateToggle({
+    Name = 'Other Projectiles',
+    Default = true,
+    Function = function(call)
+        if Blacklist then
+            Blacklist.Object.Visible = call
+        end
+    end 
+}) 
 	
 run(function()
 	local ProjectileAura
