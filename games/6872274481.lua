@@ -10593,15 +10593,6 @@ end)
                             end
                         end
 
-The problem is with the MoveToFinished event connection at the end.
-
-Issues Found
-MoveToFinished:Connect() never disconnects - creates infinite connections
-
-Logic inside creates infinite loop - calls MoveTo → triggers MoveToFinished → calls MoveTo again
-
-Missing cleanup and end for task.spawn
-
 if CurrentGen then
     vape:CreateNotification("AutoWin", "Moving to Iron Gen!", 8)
     lplr.Character.Humanoid:MoveTo(CurrentGen.Value.Position)
