@@ -9609,26 +9609,30 @@ C = BetterDavey:CreateToggle({
 
 	run(function()
     local AutoWin
-	local function Duels()
-		if Speed.Enabled and Fly.Enabled then
-			Fly:Toggle(false)
-			task.wait(0.025)
-			Speed:Toggle(false)
-		elseif Speed.Enabled then
-			Speed:Toggle(false)
-		elseif Fly.Enabled then
-			Fly:Toggle(false)
-		end
+    local function Duels()
+        if Speed.Enabled and Fly.Enabled then
+            Fly:Toggle(false)
+            task.wait(0.025)
+            Speed:Toggle(false)
+        elseif Speed.Enabled then
+            Speed:Toggle(false)
+        elseif Fly.Enabled then
+            Fly:Toggle(false)
+        end
 
-		if not Scaffold.Enabled and not Breaker.Enabled then
-			Breaker:Toggle(true)
-			task.wait(0.025)
-			Scaffold:Toggle(true)
-		elseif not Scaffold.Enabled then
-			Scaffold:Toggle(true)
-		elseif not Breaker.Enabled then
-			Breaker:Toggle(true)
-		end
+        if not Scaffold.Enabled and not Breaker.Enabled then
+            Breaker:Toggle(true)
+            task.wait(0.025)
+            Scaffold:Toggle(true)
+        elseif not Scaffold.Enabled then
+            Scaffold:Toggle(true)
+        elseif not Breaker.Enabled then
+            Breaker:Toggle(true)
+        end
+    end
+    
+    
+end)
 
                     local T = 50
                     if #playersService:GetChildren() > 1 then
@@ -10651,28 +10655,34 @@ C = BetterDavey:CreateToggle({
 				bedwars.Client:GetNamespace('Inventory'):Get('SetObservedChest'):SendToServer(nil)
 			end
 		end
-	
+		
 		local localPosition = entitylib.character.RootPart.Position
-		local chests = collection('chest', AutoWin)
-		repeat task.wait(0.1) until store.queueType ~= 'bedwars_test'
-		if not store.queueType:find('skywars') then return end
-		for _, v in chests do
-			if (localPosition - v.Position).Magnitude <= 30 then
-				vape:CreateNotification("AutoWin", "Moving to chest",2)
-				entitylib.character.Humanoid:MoveTo(v.Position)
-				lootChest(v:FindFirstChild('ChestFolderValue'))
-			end
-		end
-		task.wait(4.85)
-        vape:CreateNotification("AutoWin", "Resetting..", 3)
-		entitylib.character.Humanoid.Health = (lplr.Character:GetAttribute("MaxHealth") - lplr.Character:GetAttribute("Health"))
-		vape:CreateNotification("AutoWin", "Requeueing.", 1.85)
-		AutoWin:Clean(vapeEvents.EntityDeathEvent.Event:Connect(function(deathTable)
-				if deathTable.finalKill and deathTable.entityInstance == lplr.Character and isEveryoneDead() and store.matchState ~= 2 then
-					bedwars.QueueController:joinQueue(store.queueType)
-				end
-		end))
-		AutoWin:Clean(vapeEvents.MatchEndEvent.Event:Connect(function(...)
-			bedwars.QueueController:joinQueue(store.queueType)
-		end))
-	end
+local chests = collection('chest', AutoWin)
+repeat task.wait(0.1) until store.queueType ~= 'bedwars_test'
+if not store.queueType:find('skywars') then return end
+
+for _, v in chests do
+    if (localPosition - v.Position).Magnitude <= 30 then
+        vape:CreateNotification("AutoWin", "Moving to chest", 2)
+        entitylib.character.Humanoid:MoveTo(v.Position)
+        lootChest(v:FindFirstChild('ChestFolderValue'))
+    end
+end
+
+task.wait(4.85)
+vape:CreateNotification("AutoWin", "Resetting..", 3)
+entitylib.character.Humanoid.Health = (lplr.Character:GetAttribute("MaxHealth") - lplr.Character:GetAttribute("Health"))
+vape:CreateNotification("AutoWin", "Requeueing.", 1.85)
+
+-- Fix both connections
+local deathConn = vapeEvents.EntityDeathEvent.Event:Connect(function(deathTable)
+    if deathTable.finalKill and deathTable.entityInstance == lplr.Character and isEveryoneDead() and store.matchState ~= 2 then
+        bedwars.QueueController:joinQueue(store.queueType)
+    end
+end)
+AutoWin:Clean(deathConn)
+
+local matchConn = vapeEvents.MatchEndEvent.Event:Connect(function(...)
+    bedwars.QueueController:joinQueue(store.queueType)
+end)
+AutoWin:Clean(matchConn)
